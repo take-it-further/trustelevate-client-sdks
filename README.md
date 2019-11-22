@@ -19,6 +19,8 @@ The web site doesn't need to be designed it can generate plain html mocking the 
 where parents can manage 5 different sim cards and associate them with the children.
 
 The index / location will look something like this:
+
+
 	<html>
 		<body>
 			<h3>BT Family SIM</h3>
