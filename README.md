@@ -39,6 +39,7 @@ When the user navigates to the /allocation-sim?sim=<n> page there will be a VPR 
 incorporated according to Product API Specification 2.2.1-DRAFT 
 - see google drive https://drive.google.com/drive/u/3/folders/1FpiSWM9hgnlzBTDuj-C4J2OK1J3KJkhA)
 - there is a similar  example implementation in the fa-demo-site repo under public/vpr-demo.php
+- the `return_url` parameter of the iframe will return to the url of the page on which it is incorporated, e.g. `https://bt-demo.veripass.uk/allocate-sim?sim=n`
 
 
 The web-site will be eventually placed behind bt-demo.veripass.uk when it will be invoked from behind
