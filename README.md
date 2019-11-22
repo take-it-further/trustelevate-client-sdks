@@ -3,11 +3,10 @@
 This will be a scripted web-site that will eventually be invoked from behind a BT login.
 It can be done in any backend web language, i.e. it cannot be done in the front end with javascript
 because it contains making signed calls to veripass api which involves generating signautres
-using a secret salt. 
+using a secret salt which would be leaked if embedded in the javascript. 
 - if you will be doing anything other than PHP (or Java) then you'll have to adapt the authentcation 
   time signature method from the API Document below and we will then incorporate the new example
-  into the API doc). The signature uses a salt which means it has to be generated in the backend,
-  i.e. we cannot expose the salt to javascript and generate 
+  into the API doc).
 
 
 The web site will have the following site-map structure
