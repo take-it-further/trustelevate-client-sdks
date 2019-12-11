@@ -1,5 +1,7 @@
 import React from 'react';
 
+// import BlankSlateFamilyImg from './assets/images/blankslate-family.svg';
+
 class ChildrenList extends React.Component {
   constructor(props) {
     super(props);

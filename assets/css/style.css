@@ -6974,7 +6974,7 @@ footer {
   right: 0;
   bottom: 0;
   left: 50%;
-  background: #43cb65 url("/assets/images/auth-bg.jpg") 75% center no-repeat;
+  background: #43cb65 url("../images/auth-bg.jpg") 75% center no-repeat;
   background-size: cover; }
 
 .auth-box, .modal-box {

@@ -5,11 +5,11 @@
 ;(function(f) {
   // CommonJS
   if (typeof exports === "object" && typeof module !== "undefined") {
-    module.exports = f(require('react'));
+    module.exports = f(require('src/vendor/react'));
 
   // RequireJS
   } else if (typeof define === "function" && define.amd) {
-    define(['react'], f);
+    define(['src/vendor/react'], f);
 
   // <script>
   } else {

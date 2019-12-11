@@ -4,8 +4,16 @@ import PinForm from "./pin.form";
 import UserForm from "./user.form";
 import ConsentList from "./consent.list";
 import UserInfo from "./user.info";
+import ChildrenList from "./children.list";
+import ServiceList from "./service.list";
 
-class Main extends React.Component {
+// import './assets/css/style.css'
+// import './assets/css/bootstrap.min.css'
+// import Logo from './assets/images/logo@3x.png'
+// import BRequests from './assets/images/blankslate-requests.svg'
+// import AuthBack from './assets/images/auth-bg.jpg';
+
+export default class Main extends React.Component {
 
   // updateSession(_ssid) {
   //   this.ssid = _ssid;
@@ -24,18 +32,7 @@ class Main extends React.Component {
     this.handlePinFromSubmit = this.handlePinFromSubmit.bind(this);
     this.requestResendSms = this.requestResendSms.bind(this);
     this.parseHash = this.parseHash.bind(this);
-    this.toggleMobileMenu = this.toggleMobileMenu.bind(this)
-
-    if (window.location.host == "staging-my.veripass.uk") {
-      this.htbase = "https://staging-api.veripass.uk";
-      this.wsbase = "wss://staging-api.veripass.uk";
-    }
-    if (window.location.host.startsWith("localhost")) {
-      // this.htbase = "http://local-api.veripass.uk:8881"
-      // this.wsbase = "ws://local-api.veripass.uk:8881"
-      this.htbase = "https://staging-api.veripass.uk";
-      this.wsbase = "wss://staging-api.veripass.uk";
-    }
+    this.toggleMobileMenu = this.toggleMobileMenu.bind(this);
 
     const storedProfile = sessionStorage.getItem("profile");
     const profile = (storedProfile ? JSON.parse(storedProfile) : {pii: {}});
@@ -130,8 +127,8 @@ class Main extends React.Component {
     );
 
     if (!window.location.href.includes("#") || this.state.page.startsWith("walkthrough")) {
-      const slides = [1,2,3,4,5,6]
-      const slide = this.state.page.startsWith("walkthrough") ? parseInt(this.state.page.substr(12)) : 1
+      const slides = [1,2,3,4,5,6];
+      const slide = this.state.page.startsWith("walkthrough") ? parseInt(this.state.page.substr(12)) : 1;
       return (
 
           <div className="auth">
@@ -466,8 +463,9 @@ class Main extends React.Component {
 
   createWebSocket() {
     const main = this;
-    connect(() => {
-      this.onOpen = () => {
+    api.connect({
+
+      onOpen: () => {
         main.setState({connect: true});
         if (!main.sendRegistrationData(main.state.pii)) {
           //if not session data to restore from
@@ -477,25 +475,25 @@ class Main extends React.Component {
             window.location.hash = ""
           }
         }
-      };
+      },
 
-      this.onClose = () => {
+      onClose: () => {
         main.setState({connect: false});
-      };
+      },
 
-      this.onError = (err) => {
+      onError: (err) => {
         console.log(err);
-      };
+      },
 
-      this.onMessage = (event) => {
+      onMessage: (event) => {
         let msg = JSON.parse(event.data);
         console.log("RECEIVE", msg);
         main.handleMessage(msg);
-      };
+      },
 
-      this.onSessionUpdate = (sid) => {
+      onSessionUpdate: (sid) => {
         main.setState({sid: sid});
-      };
+      }
     });
   }
 
@@ -583,7 +581,7 @@ class Main extends React.Component {
       console.log("closing web socket");
       api.closeConnection();
       console.log("reopening websocket");
-      api.connect();
+      this.createWebSocket();
     }
     this.setState((prevState, props) => ({
       ssid: undefined,
