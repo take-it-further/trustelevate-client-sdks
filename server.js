@@ -5,6 +5,7 @@ import Main from './src/client/main';
 
 const app = express();
 
+// assignments required for rendering UI part
 if (typeof window === 'undefined') {
   global.window = {location: {href: ""}}
 }
@@ -26,12 +27,23 @@ app.set("view engine", "pug");
 app.use('/assets', express.static('assets'));
 app.use(express.static('dist'));
 
+// validates session id from request header
+function validateSession(sessionId) {
+  return !!sessionId;
+}
+
 // Index page handler
 app.get('/', (req, res) => {
-  let body = renderToString(<Main />);
-  res.render('index', {body: body});
+  let sessionId = req.header('SMSESSIONID');
+  if (validateSession(sessionId)) {
+    let body = renderToString(<Main />);
+    res.render('index', {body: body});
+  } else {
+    res.status(403).send();
+  }
 });
 
 app.listen(3000, () => {
   console.log("Server started")
 });
+
