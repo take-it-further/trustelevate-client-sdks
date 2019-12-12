@@ -174,7 +174,7 @@ function closeConnection() {
 }
 
 function signOut(creds, callback) {
-  _sendRequest("/v1/c/signout", creds, undefined, callback);
+  _sendRequest("/v1/c/signout", creds, {}, callback);
 }
 
 function assignConsent(creds, data) {
