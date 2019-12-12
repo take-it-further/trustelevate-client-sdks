@@ -359,7 +359,7 @@ export default class Main extends React.Component {
               <div className={"box"}>
                 <div className={"level"}>
                   <div className={"level-left"}>
-                    <pre>{this.htbase}</pre>
+                    <pre>{api.getHtBase()}</pre>
                   </div>
                   <div className={"level-right"}>
                     {!this.state.connect &&

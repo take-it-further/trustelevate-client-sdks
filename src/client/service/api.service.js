@@ -6,6 +6,10 @@ const reconnect = 5;
 let reconnectTimer = undefined;
 let socketWs = undefined;
 
+function getHtBase() {
+    return htbase
+}
+
 class DummyCallback {
   onError(data) {
     console.log("[DummyCallback] Error data: " + (data && JSON.stringify(data) || 'empty'));
@@ -178,6 +182,7 @@ function assignConsent(creds, data) {
 }
 
 export default {
+  getHtBase: getHtBase,
   connect: connect,
   sendApproveConsent: sendApproveConsent,
   sendRejectConsent: sendRejectConsent,
