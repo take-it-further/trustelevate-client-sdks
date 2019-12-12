@@ -2,10 +2,11 @@
   "name": "bt-demo-site",
   "version": "1.0.0",
   "description": "This will be a scripted web-site that will eventually be invoked from behind a BT login. It can be done in any backend web language, i.e. it cannot be done in the front end with javascript because it contains making signed calls to veripass api which involves generating signautres using a secret salt which would be leaked if embedded in the javascript.  - if you will be doing anything other than PHP (or Java) then you'll have to adapt the authentcation    time signature method from the API Document below and we will then incorporate the new example   into the API doc).",
-  "main": "app.js",
+  "main": "server.js",
   "private": true,
   "scripts": {
-    "start": "nodemon app.js",
+    "build": "NODE_ENV=production webpack",
+    "start": "nodemon --exec babel-node server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -21,8 +22,26 @@
   "mainDir": "src",
   "dependencies": {
     "crypto": "^1.0.1",
+    "esm": "^3.2.25",
     "express": "^4.17.1",
     "moment": "^2.24.0",
-    "pug": "^2.0.4"
+    "nodemon": "^2.0.2",
+    "pug": "^2.0.4",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.5",
+    "@babel/node": "^7.7.4",
+    "@babel/plugin-proposal-class-properties": "^7.7.4",
+    "@babel/preset-env": "^7.7.6",
+    "@babel/preset-react": "^7.7.4",
+    "babel-loader": "^8.0.6",
+    "css-loader": "^3.2.1",
+    "file-loader": "^5.0.2",
+    "style-loader": "^1.0.1",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-node-externals": "^1.7.2"
   }
 }

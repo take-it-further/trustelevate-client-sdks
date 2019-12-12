@@ -1,16 +1,21 @@
 html
   head
-      title TE Demo
+      title Veripass (UK)
+      meta(charset="utf-8")
+      meta(name="viewport", content="width=device-width, initial-scale=1")
+      script(src="/assets/js/react.js", crossorigin=true)
+      script(src="/assets/js/react-dom.js", crossorigin=true)
+      script(src="/assets/js/babel.min.js", crossorigin=true)
+      script(src="https://use.fontawesome.com/releases/v5.3.1/js/all.js", defer=true)
+      script(src="/assets/js/jquery-3.3.1.min.js", type="text/javascript")
+      script(src="/assets/js/datepicker.min.js", type="text/javascript")
+      //link(href="/assets/css/bootstrap.min.css", rel="stylesheet")
+      link(href="/assets/css/style.css", rel="stylesheet")
+      link(href="/assets/css/embed.css", rel="stylesheet")
+      link(rel="icon", type="image/png", href="/assets/images/logo@3x.png")
+
   body
-    h3 BT Family SIM
-    ul
-      li
-        a(href="/allocatie-sim?sim=1") SIM 1
-      li
-        a(href="/allocatie-sim?sim=2") SIM 2
-      li
-        a(href="/allocatie-sim?sim=3") SIM 3
-      li
-        a(href="/allocatie-sim?sim=4") SIM 4
-      li
-        a(href="/allocatie-sim?sim=5") SIM 5
+    div(id="smsession")
+      center Powered By Veripass™ SMSession ID: !{smsessionid}
+    div(id="root") !{body}
+    script(src="veripass.js")
