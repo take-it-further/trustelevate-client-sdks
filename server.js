@@ -38,7 +38,7 @@ app.get('/', (req, res) => {
   let sessionId = req.header('SMSESSIONID');
   if (validateSession(sessionId)) {
     let body = renderToString(<Main />);
-    res.render('index', {body: body});
+    res.render('index', {smsessionid: sessionId, body: body});
   } else {
     res.status(403).send();
   }
