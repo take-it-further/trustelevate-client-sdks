@@ -1,5 +1,5 @@
 import React from 'react';
-
+import {firstName, lastName, dateOfBirth, baloon} from './utils';
 // import BlankSlateFamilyImg from './assets/images/blankslate-family.svg';
 
 class ChildrenList extends React.Component {

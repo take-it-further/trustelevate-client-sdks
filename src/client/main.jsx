@@ -401,11 +401,19 @@ export default class Main extends React.Component {
   }
 
   approveConsent(alias, contact) {
-    api.sendApproveConsent(alias, contact);
+    let creds = {
+      pid: this.state.pid,
+      token: this.state.token
+    };
+    api.sendApproveConsent(creds, alias, contact);
   }
 
   rejectConsent(alias, contact) {
-    api.sendRejectConsent(alias, contact);
+    let creds = {
+      pid: this.state.pid,
+      token: this.state.token
+    };
+    api.sendRejectConsent(creds, alias, contact);
   }
 
   requestResendSms(callback) {
@@ -492,7 +500,8 @@ export default class Main extends React.Component {
       },
 
       onSessionUpdate: (sid) => {
-        main.setState({sid: sid});
+        main.setState({ssid: sid});
+        this.ssid = sid
       }
     });
   }
@@ -506,6 +515,7 @@ export default class Main extends React.Component {
       let view = JSON.parse(response);
       console.log("fullview", view);
       main.setState({
+        auth: true,
         revision: view.revision,
         services: view.services,
         providers: view.providers,

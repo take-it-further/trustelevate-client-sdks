@@ -18,13 +18,15 @@ class DummyCallback {
 
 const dummyCallback = new DummyCallback();
 
-function _createCORSRequest(method, url) {
+function _createCORSRequest(method, uri) {
+  const url = htbase + uri
+  console.log(method, url);
   let xhr = new XMLHttpRequest();
   if ("withCredentials" in xhr) {
-    xhr.open(method, htbase + url, true);
+    xhr.open(method, url, true);
   } else if (typeof XDomainRequest != "undefined") {
     xhr = new XDomainRequest();
-    xhr.open(method, htbase + url);
+    xhr.open(method, url);
   } else {
     xhr = null;
   }
@@ -38,10 +40,8 @@ function _sendRequest(uri, creds, data, callback = dummyCallback) {
   if (!pid || !token) {
     console.warn("Not registerd");
   } else {
-    let url = htbase + uri;
     let method = (data === undefined) ? "GET" : "POST";
-    console.log(method, url);
-    let xhr = _createCORSRequest(method, url);
+    let xhr = _createCORSRequest(method, uri);
     xhr.setRequestHeader("Authorization", 'VPC pid=' + pid + ', token=' + token);
     if (data === undefined) {
       xhr.send();
@@ -52,21 +52,19 @@ function _sendRequest(uri, creds, data, callback = dummyCallback) {
     xhr.onload = function () {
       if (xhr.status === 403) {
         console.warn("need registering");
-        callback.onError({
-          pid: undefined,
-          auth: false
-        });
+        //FIXME callback.onError({
+        //   pid: undefined,
+        //   auth: false
+        // });
       } else if (xhr.status === 401) {
         console.warn("need authenticating");
-        callback.onError({auth: false});
+        //FIXME callback.onError({auth: false}); -> it should do setState({auth: false}) on the main component
         window.location.hash="#authenticate"
       } else if (xhr.status === 200) {
-        callback.onSuccess({auth: true});
-        // TODO: check how response used in callback
+        //FIXME callback.onSuccess({auth: true}); -> it should do setState({auth: true}) on the main component
         if (callback !== undefined) callback(xhr.response);
       } else if (xhr.status === 202) {
-        // TODO: check how response used in callback
-        callback.onSuccess({auth: true});
+        //FIXME callback.onSuccess({auth: true}); -> it should do setState({auth: true}) on the main component
         if (callback !== undefined) callback(xhr.response);
       } else {
         console.error("renewing failed:", xhr.status);
@@ -102,7 +100,7 @@ function connect(handler) {
     handler.onClose(event);
     if (event.code === 1006) {
       //something in the amazon infrastructure closes the websockets after 1 minute (even without ELB!)
-      console.log("WebSocket connection closed by remote peer, attempting again in " + main.reconnect + " seconds.. ");
+      console.log("WebSocket connection closed by remote peer, attempting again in " + reconnect + " seconds.. ");
       reconnectTimer = setTimeout(() => connect(handler), reconnect * 1000);
     } else if (event.code !== 1000) {
       console.log("WebSocket closed", event.code, event.reason);
@@ -120,15 +118,15 @@ function connect(handler) {
 }
 
 function sendApproveConsent(creds, alias, contact) {
-  _sendRequest("/v1/c/approved", {alias: alias, contact: contact});
+  _sendRequest("/v1/c/approved", creds, {alias: alias, contact: contact});
 }
 
 function sendRejectConsent(creds, alias, contact) {
-  _sendRequest("/v1/c/rejected", {alias: alias, contact: contact});
+  _sendRequest("/v1/c/rejected", creds,{alias: alias, contact: contact});
 }
 
 function requestResendSms(creds, callback) {
-  const xhr = _createCORSRequest("POST", this.htbase + "/v1/c/resend/sms");
+  const xhr = _createCORSRequest("POST", "/v1/c/resend/sms");
   xhr.setRequestHeader("Content-Type", "application/json");
   xhr.send(JSON.stringify(creds));
 
