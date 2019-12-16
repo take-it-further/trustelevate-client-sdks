@@ -1,7 +1,17 @@
-const creds = require('../config/credentials');
 const nodeUrl = require('url');
 const crypto = require('crypto');
 const moment = require('moment');
+
+function _signUrl(url, apiKey, apiSalt) {
+  let hash = timeBasedHash(nodeUrl.parse(url).pathname, apiSalt)
+  let signature = apiKey + ":" + hash;
+  if (u.query) {
+    return `${url}&signature=` + encodeURIComponent(signature);
+  } else {
+    return `${url}?signature=` + encodeURIComponent(signature);
+  }
+}
+
 
 function timeBasedHash(arg, hexSalt, offsetInMins = 0) {
 
@@ -28,15 +38,6 @@ function timeBasedHash(arg, hexSalt, offsetInMins = 0) {
   .digest()
   .toString('hex')
   .toUpperCase();
-}
-
-function _signUrl(url) {
-  let path = nodeUrl.parse(url).pathname;
-  let salt = timeBasedHash(path, creds.apiSalt);
-
-  let signature = creds.apiKey + ":" + salt;
-
-  return `${creds.apiUrl}${url}?signature=` + encodeURIComponent(signature);
 }
 
 // below functions required for support of NodeJs 10.x versions
@@ -68,4 +69,3 @@ function writeBigU_Int64BE(buf, value, offset, min, max) {
 }
 
 module.exports.signUrl = _signUrl;
-module.exports.apiUrl = creds.apiUrl;
