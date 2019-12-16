@@ -15,7 +15,7 @@ function timeBasedHash(arg, hexSalt, offsetInMins = 0) {
   let ts = utcTime.unix();
 
   let tsBuffer = Buffer.alloc(8);
-  tsBuffer.writeBigInt64BE(BigInt(ts));
+  writeBigInt64BE(tsBuffer, BigInt(ts));
 
   let buffer = Buffer.concat([
       Buffer.from(hexSalt, 'hex'),
@@ -37,6 +37,34 @@ function _signUrl(url) {
   let signature = creds.apiKey + ":" + salt;
 
   return `${creds.apiUrl}${url}?signature=` + encodeURIComponent(signature);
+}
+
+// below functions required for support of NodeJs 10.x versions
+// source: https://github.com/nodejs/node/blob/v12.6.0/lib/internal/buffer.js#L78-L152
+function writeBigInt64BE(buf, value, offset = 0) {
+  return writeBigU_Int64BE(
+      buf, value, offset, -0x8000000000000000n, 0x7fffffffffffffffn);
+}
+
+function writeBigU_Int64BE(buf, value, offset, min, max) {
+
+  let lo = Number(value & 0xffffffffn);
+  buf[offset + 7] = lo;
+  lo = lo >> 8;
+  buf[offset + 6] = lo;
+  lo = lo >> 8;
+  buf[offset + 5] = lo;
+  lo = lo >> 8;
+  buf[offset + 4] = lo;
+  let hi = Number(value >> 32n & 0xffffffffn);
+  buf[offset + 3] = hi;
+  hi = hi >> 8;
+  buf[offset + 2] = hi;
+  hi = hi >> 8;
+  buf[offset + 1] = hi;
+  hi = hi >> 8;
+  buf[offset] = hi;
+  return offset + 8;
 }
 
 module.exports.signUrl = _signUrl;
