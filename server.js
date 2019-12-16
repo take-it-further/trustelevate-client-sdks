@@ -2,6 +2,7 @@ import React from 'react';
 import express from 'express';
 import { renderToString } from 'react-dom/server';
 import Main from './src/client/main';
+var cookie = require('cookie');
 
 const app = express();
 
@@ -28,17 +29,18 @@ app.use('/assets', express.static('assets'));
 app.use(express.static('dist'));
 
 // validates session id from request header
-function validateSession(sessionId) {
-  // return true
-  return !!sessionId;
+function validateSession(request) {
+  let x = cookie.parse(request.header('X-Cookie') || "")
+  let c = cookie.parse(request.header('Cookie') || "")
+  return c['SMSESSION'] || x['SMSESSION']
 }
 
 // Index page handler
 app.get('/', (req, res) => {
-  let sessionId = req.header('SMSESSIONID');
-  if (validateSession(sessionId)) {
+  let smSession = validateSession(req);
+  if (smSession !== undefined) {
     let body = renderToString(<Main />);
-    res.render('index', {smsessionid: sessionId, body: body});
+    res.render('index', {smsessionid: smSession, body: body});
   } else {
     res.status(403).send();
   }
