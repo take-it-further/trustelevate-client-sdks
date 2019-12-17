@@ -1,0 +1,35 @@
+{
+  "name": "veripass-client-demo",
+  "version": "1.0.0",
+  "description": "Examplr nodejs server that uses Veripass API",
+  "main": "server.js",
+  "private": true,
+  "scripts": {
+    "start": "node ./server.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TrustElevateLtd/bt-demo-site.git"
+  },
+  "author": "TrustElevate Dev Team",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/TrustElevateLtd/bt-demo-site/issues"
+  },
+  "homepage": "https://github.com/TrustElevateLtd/bt-demo-site#readme",
+  "mainDir": "src",
+  "dependencies": {
+    "crypto": "^1.0.1",
+    "esm": "^3.2.25",
+    "express": "^4.17.1",
+    "moment": "^2.24.0",
+    "nodemon": "^2.0.2",
+    "pug": "^2.0.4"
+  },
+  "devDependencies": {
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-node-externals": "^1.7.2"
+  }
+}
