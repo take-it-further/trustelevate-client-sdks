@@ -84,7 +84,7 @@ class AssignChildForm extends React.Component {
                         </div>
                         <div className="field">
                           <div className="control input-wrapper">
-                            <input className="input" type="text" placeholder="Date of Birth" name="dob" value={this.state.dob} onChange={this.updateForm} data-toggle="datepicker"/>
+                            <input className="input" type="date" placeholder="Date of Birth (dd.mm.yyyy)" name="dob" value={this.state.dob} onChange={this.updateForm} data-toggle="datepicker"/>
                           </div>
                         </div>
                       </fieldset>

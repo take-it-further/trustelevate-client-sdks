@@ -15,15 +15,8 @@ import ServiceList from "./service.list";
 
 export default class Main extends React.Component {
 
-  // updateSession(_ssid) {
-  //   this.ssid = _ssid;
-  //   this.setState({ssid: this.ssid});
-  //   sessionStorage.setItem('ssid', this.ssid);
-  // }
-
   constructor(props) {
     super(props);
-
     this.createWebSocket = this.createWebSocket.bind(this);
     this.errorHandler = this.errorHandler.bind(this)
     this.handleOnReset = this.handleOnReset.bind(this);
@@ -254,6 +247,7 @@ export default class Main extends React.Component {
       const numRejected = cs.filter((c) => c.data.status == "REJECTED").length;
       const numServices = Object.keys(this.state.services).length;
       return (<div className="default">
+
         <nav className="navbar is-transparent" role="navigation" aria-label="main navigation">
           <div className="container">
             <div className="navbar-brand">
@@ -366,6 +360,8 @@ export default class Main extends React.Component {
                     <span className="tag is-warning">Waiting for connection..</span>}
                   </div>
                 </div>
+                Session Type: {this.props.sessionType}
+                <br/>
                 {this.state.ssid && (<span>SSID: {this.state.ssid}</span>)}
                 <hr/>
                 <UserInfo profile={this.state.profile} pid={this.state.pid}/>
@@ -527,6 +523,9 @@ export default class Main extends React.Component {
   }
 
   sendRegistrationData(pii) {
+    if (!pii) {
+      return false
+    }
     const register = pii.register || false;
     delete pii.register;
     this.setState({pii: pii});
