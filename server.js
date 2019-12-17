@@ -2,8 +2,7 @@ import React from 'react';
 import express from 'express';
 import { renderToString } from 'react-dom/server';
 import Main from './src/client/main';
-var cookie = require('cookie');
-
+const cookie = require('cookie');
 const app = express();
 
 // assignments required for rendering UI part
@@ -29,19 +28,28 @@ app.use('/assets', express.static('assets'));
 app.use(express.static('dist'));
 
 // validates session id from request header
-function validateSession(request) {
-  return 'trial-session-2019'
-  let x = cookie.parse(request.header('X-Cookie') || "")
-  let c = cookie.parse(request.header('Cookie') || "")
-  return c['SMSESSION'] || x['SMSESSION']
+function getSessionType(request) {
+  let host = request.get('host')
+  if (host.startsWith("local")) {
+    return 'local'
+  } else if (host == "my.veripass.uk") {
+    return ''
+  } else if (host == "bt-demo.veripass.uk") {
+    return 'trial-session-2019'
+    let x = cookie.parse(request.header('X-Cookie') || "")
+    let c = cookie.parse(request.header('Cookie') || "")
+    return c['SMSESSION'] || x['SMSESSION']
+  } else {
+    return undefined
+  }
 }
 
 // Index page handler
 app.get('/', (req, res) => {
-  let smSession = validateSession(req);
-  if (smSession !== undefined) {
-    let body = renderToString(<Main />);
-    res.render('index', {smsessionid: smSession, body: body});
+  let sessionType = getSessionType(req);
+  if (sessionType !== undefined) {
+    let body = renderToString(<Main sessionType={sessionType}/>);
+    res.render('index', {sessionType: sessionType, body: body});
   } else {
     res.status(403).send();
   }

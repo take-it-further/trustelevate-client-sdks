@@ -1,13 +1,26 @@
-const htbase = "https://api.veripass.uk";
-const wsbase = "wss://api.veripass.uk";
-const connectUrl = wsbase + "/v1/c/connect";
+const os = require("os");
+
 const reconnect = 5;
 
 let reconnectTimer = undefined;
 let socketWs = undefined;
 
 function getHtBase() {
-    return htbase
+  const host = os.hostname()
+  if (host.startsWith("staging") || host.startsWith("local")) {
+    return "https://staging-api.veripass.uk";
+  } else {
+    return "https://api.veripass.uk";
+  }
+}
+
+function getWsBase() {
+  const host = os.hostname()
+  if (host.startsWith("staging") || host.startsWith("local")) {
+    return "wss://staging-api.veripass.uk";
+  } else {
+    return "wss://api.veripass.uk";
+  }
 }
 
 class DummyCallback {
@@ -23,7 +36,7 @@ class DummyCallback {
 const dummyCallback = new DummyCallback();
 
 function _createCORSRequest(method, uri) {
-  const url = htbase + uri
+  const url = getHtBase() + uri
   console.log(method, url);
   let xhr = new XMLHttpRequest();
   if ("withCredentials" in xhr) {
@@ -86,11 +99,12 @@ function connect(handler) {
   _updateSession(sid);
   handler.onSessionUpdate(sid);
 
-  let ws = new WebSocket(connectUrl);
+  let ws = new WebSocket(getWsBase() + "/v1/c/connect");
   ws.binaryType = 'arraybuffer';
   ws.onopen = function(event) {
-    console.log("WebSocket connection established: ", connectUrl);
+    console.log("WebSocket connection established: ", getWsBase() + "/v1/c/connect");
     handler.onOpen();
+
     if (reconnectTimer) {
       clearTimeout(reconnectTimer)
     }

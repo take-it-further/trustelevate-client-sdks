@@ -11,11 +11,8 @@ html
       script(src="/assets/js/datepicker.min.js", type="text/javascript")
       //link(href="/assets/css/bootstrap.min.css", rel="stylesheet")
       link(href="/assets/css/style.css", rel="stylesheet")
-      link(href="/assets/css/embed.css", rel="stylesheet")
       link(rel="icon", type="image/png", href="/assets/images/logo@3x.png")
-
+      script(src="veripass.js" defer)
+      script window.__sessionType = "!{sessionType}"
   body
-    div(id="smsession")
-      center Powered By Veripass™ SMSession ID: !{smsessionid}
     div(id="root") !{body}
-    script(src="veripass.js")
