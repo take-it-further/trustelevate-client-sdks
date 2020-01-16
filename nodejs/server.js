@@ -7,7 +7,7 @@ app.set("view engine", "pug");
 
 app.get('/', (req, res) => {
     const apiKey = "trd"
-    const apiSalt = "4515000E64CEC6ACFBF6BE5D04816D63"
+    const apiSalt = "123ABC456DEF789ABC123DEF456ABC12"
     const returnUrl = "http://blackdice.com/demo?mac=xyz"
     let url = "https://api.veripass.uk/v2/p/vpr/iframe?return=" + returnUrl
     url = veripass.signUrl(url, apiKey, apiSalt);
