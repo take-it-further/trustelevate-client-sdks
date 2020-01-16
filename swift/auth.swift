@@ -25,15 +25,12 @@ extension Sequence where Iterator.Element == UInt8 {
     }
 }
 
-
 func timeBasedHash(path: String, salt: String, offset: Int64 = 0) -> String {
     let ts = (Int64(floor(Date().timeIntervalSince1970 / 60)) + offset) * 60
     let tsendian = withUnsafeBytes(of: ts.bigEndian) { Array($0) }
     let raw = salt.hexa + tsendian + path.bytes
     var digest = [UInt8](repeating: 0, count:Int(CC_SHA256_DIGEST_LENGTH))
-    strData.withUnsafeBytes {
-        CC_SHA256($0.baseAddress, UInt32(strData.count), &digest)
-    }
+    CC_SHA256(raw, UInt32(raw.count), &digest)
     var sha256signature = ""
     for byte in digest {
         sha256signature += String(format:"%02X", UInt8(byte))
