@@ -1,7 +1,11 @@
 import * as crypto from "crypto";
 import * as fnv from "@sindresorhus/fnv1a";
-import {G1Consent, G1Source, G1Token, SourceType} from "./protocol";
+import {Anchor, G1Claim, G1Consent, G1Source, G1Token, SourceType} from "./protocol";
 
+type RuneVal = {
+  rune: number,
+  size: number
+};
 
 export class G1TokeBuilder {
   private contacts: string[];
@@ -43,6 +47,7 @@ export class G1TokeBuilder {
     if (name) {
       this.name = name.trim();
     }
+    return this;
   }
 
   setDateOfBirth(date: string) {
@@ -61,11 +66,34 @@ export class G1TokeBuilder {
     return this;
   }
 
+  getData(sourceType: SourceType): Anchor[] {
+    const result: Anchor[] = [];
+    this.getTokens(sourceType).forEach((value, key) => {
+      result.push({anchor: key, g1Token: value});
+    })
+
+    return result;
+  }
+
+  getClaim(): G1Claim {
+    const data = new Map<string, string[]>();
+
+    this.getTokens("DUMMY").forEach((value, key) => {
+      const hashes = [];
+      value.forEach(v => hashes.push(v.hash))
+
+      data.set(key, hashes);
+    })
+
+    return {data: data};
+  }
+
+
   // @ts-ignore
   getTokens(sourceType: SourceType): Map<string, G1Token[]> {
     let result = new Map<string, G1Token[]>();
 
-    for (let contact in this.contacts) {
+    for (let contact of this.contacts) {
       let anchorHash = G1TokeBuilder.anchorHash(contact);
       result.set(anchorHash, []);
 
@@ -77,36 +105,36 @@ export class G1TokeBuilder {
 
       if (this.name) {
         let rootHash = this.g1RootHash(anchorHash);
-        let token: G1Token = {hash: G1TokeBuilder.g1(rootHash + this.g1fuzzyHash(this.name)), score: 2, g1Consent: consents};
-        if (sourceType != "NONE") {
-          token.g1Source = [];
-          token.g1Source.push({type: sourceType, updateTime: this.updated});
-        }
+
+        let token: G1Token = new G1Token(
+            G1TokeBuilder.g1(rootHash + this.g1fuzzyHash(this.name)),
+            2,
+            sourceType != "NONE" ? [{type: sourceType, updateTime: this.updated}] : [],
+            consents
+        ) ;
 
         result.get(anchorHash).push(token);
       }
 
       if (this.day > 0 && this.month > 0 && this.year > 0) {
         let rootHash = this.g1RootHash(`${anchorHash}${this.day}${this.month}${this.year}`);
-        let token: G1Token = {score: 3, hash: G1TokeBuilder.g1(rootHash), g1Consent: consents};
-        if (sourceType != "NONE") {
-          token.g1Source = [];
-          token.g1Source.push({type: sourceType, updateTime: this.updated});
-        }
+
+        let token: G1Token = new G1Token(
+            G1TokeBuilder.g1(rootHash),
+            3,
+            sourceType != "NONE" ? [{type: sourceType, updateTime: this.updated}] : [],
+            consents
+        );
 
         result.get(anchorHash).push(token);
 
         if (this.name) {
-          let token: G1Token = {
-            score: 5,
-            hash: G1TokeBuilder.g1(rootHash + this.g1fuzzyHash(this.name)),
-            g1Consent: consents
-          }
-
-          if (sourceType != "NONE") {
-            token.g1Source = [];
-            token.g1Source.push({type: sourceType, updateTime: this.updated});
-          }
+          let token: G1Token = new G1Token(
+              G1TokeBuilder.g1(rootHash + this.g1fuzzyHash(this.name)),
+              5,
+              sourceType != "NONE" ? [{type: sourceType, updateTime: this.updated}] : [],
+              consents
+          );
 
           result.get(anchorHash).push(token);
         }
@@ -147,22 +175,35 @@ export class G1TokeBuilder {
       .update(anchor.trim())
       .digest('hex');
 
-    // TODO(aleksey): find the solution for getting 'uint64'
+    // TODO(Michal): how to get the 'uint64' type here ??
     return BigInt(fnv(hash)) << 32;
   }
 
-  // TODO(aleksey): implement
+  // TODO(Michal): Is this function may work in the JS? It is using uint64 types, that not supported in JS
   private g1fuzzyHash(input: string): number {
-    for (let part in input.split(" ")) {
-      let normal = part.trim().toLowerCase();
+    let result = 0;
 
+    for (let part of input.split(" ")) {
+      let normal = part.trim().toLowerCase();
+      let weight = 65535;
+      while (normal.length > 0) {
+        const rune = this.decodeRuneInStr(normal);
+        normal = normal.slice(rune.size);
+        const piece = rune.rune * weight;
+        result += piece
+        weight = weight / 4
+      }
     }
 
     return 0;
   }
 
+  // TODO (Michal): how to do it in JS????
+  private decodeRuneInStr(val: string): RuneVal {
+    return {rune: 0, size: 0};
+  }
+
   private static g1(hash: number): string {
     return hash.toString(16);
   }
-
 }
