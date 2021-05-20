@@ -1,4 +1,3 @@
-import has = Reflect.has;
 
 export type SourceType = 'NONE' | 'SELF' | 'DUMMY' | 'WONDE';
 
