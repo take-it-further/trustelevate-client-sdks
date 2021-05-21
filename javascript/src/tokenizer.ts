@@ -1,6 +1,6 @@
 import * as crypto from "crypto";
-import * as fnv from "@sindresorhus/fnv1a";
-import {Anchor, G1Claim, G1Consent, G1Source, G1Token, SourceType} from "./protocol";
+import * as fnv from "./fnv1a"
+import {Anchor, G1Claim, G1Consent, G1Source, G1Token, SourceType} from "../../javascript/src/protocol";
 
 type RuneVal = {
   rune: number,
@@ -33,8 +33,9 @@ export class G1TokeBuilder {
   }
 
   addContacts(...contacts: string[]) {
-    for (let contact in contacts) {
-      let normContact = G1TokeBuilder.normalizeContact(this.defaultIntlCode, contact);
+
+    for (let i =0; i < contacts.length; i++) {
+      let normContact = G1TokeBuilder.normalizeContact(this.defaultIntlCode, contacts[i]);
       if (normContact) {
         this.contacts.push(normContact);
       }
@@ -53,7 +54,7 @@ export class G1TokeBuilder {
   setDateOfBirth(date: string) {
     let normDate = date ? date.trim() : undefined;
     if (normDate) {
-      let parts = normDate.split(/\.-/);
+      let parts = normDate.split(/\../);
       if (parts.length != 3) {
         throw Error("Invalid date. Should match pattern: dd-MM-yyyy");
       }
@@ -75,20 +76,6 @@ export class G1TokeBuilder {
     return result;
   }
 
-  getClaim(): G1Claim {
-    const data = new Map<string, string[]>();
-
-    this.getTokens("DUMMY").forEach((value, key) => {
-      const hashes = [];
-      value.forEach(v => hashes.push(v.hash))
-
-      data.set(key, hashes);
-    })
-
-    return {data: data};
-  }
-
-
   // @ts-ignore
   getTokens(sourceType: SourceType): Map<string, G1Token[]> {
     let result = new Map<string, G1Token[]>();
@@ -96,7 +83,6 @@ export class G1TokeBuilder {
     for (let contact of this.contacts) {
       let anchorHash = G1TokeBuilder.anchorHash(contact);
       result.set(anchorHash, []);
-
       // fill in consents
       const consents: G1Consent[] = [];
       this.subjects.forEach((value, key) => {
@@ -104,10 +90,10 @@ export class G1TokeBuilder {
       });
 
       if (this.name) {
-        let rootHash = this.g1RootHash(anchorHash);
-
+        let root = G1TokeBuilder.g1Root(anchorHash);
+        const t = G1TokeBuilder.g1(root, G1TokeBuilder.g1fuzzyHash(this.name))
         let token: G1Token = new G1Token(
-            G1TokeBuilder.g1(rootHash + this.g1fuzzyHash(this.name)),
+            t,
             2,
             sourceType != "NONE" ? [{type: sourceType, updateTime: this.updated}] : [],
             consents
@@ -117,10 +103,10 @@ export class G1TokeBuilder {
       }
 
       if (this.day > 0 && this.month > 0 && this.year > 0) {
-        let rootHash = this.g1RootHash(`${anchorHash}${this.day}${this.month}${this.year}`);
+        let root = G1TokeBuilder.g1Root(`${anchorHash}${this.day}${this.month}${this.year}`);
 
         let token: G1Token = new G1Token(
-            G1TokeBuilder.g1(rootHash),
+            G1TokeBuilder.g1(root, 0),
             3,
             sourceType != "NONE" ? [{type: sourceType, updateTime: this.updated}] : [],
             consents
@@ -130,7 +116,7 @@ export class G1TokeBuilder {
 
         if (this.name) {
           let token: G1Token = new G1Token(
-              G1TokeBuilder.g1(rootHash + this.g1fuzzyHash(this.name)),
+              G1TokeBuilder.g1(root, G1TokeBuilder.g1fuzzyHash(this.name)),
               5,
               sourceType != "NONE" ? [{type: sourceType, updateTime: this.updated}] : [],
               consents
@@ -144,7 +130,7 @@ export class G1TokeBuilder {
     }
   }
 
-  private static normalizeContact(defaultIntlCode: string, contact: string): string {
+  static normalizeContact(defaultIntlCode: string, contact: string): string {
     let normContact = contact ? contact.trim() : "";
 
     if (normContact.indexOf("@") < 0) {
@@ -162,7 +148,7 @@ export class G1TokeBuilder {
     return normContact;
   }
 
-  private static anchorHash(contact: string): string {
+  static anchorHash(contact: string): string {
     const hash = crypto.createHash("sha256")
       .update(contact)
       .digest('hex');
@@ -170,40 +156,36 @@ export class G1TokeBuilder {
     return `g1:${hash}`;
   }
 
-  private g1RootHash(anchor: string): number {
-    let hash = crypto.createHash("sha256")
-      .update(anchor.trim())
-      .digest('hex');
-
-    // TODO(Michal): how to get the 'uint64' type here ??
-    return BigInt(fnv(hash)) << 32;
+  static sha256(input: string): Buffer {
+    return crypto.createHash("sha256")
+        .update(input.trim())
+        .digest()
   }
 
-  // TODO(Michal): Is this function may work in the JS? It is using uint64 types, that not supported in JS
-  private g1fuzzyHash(input: string): number {
+  static g1Root(input: string): number {
+    let hash = G1TokeBuilder.sha256(input)
+    return fnv.fnv1a(hash)
+  }
+
+  static g1fuzzyHash(input: string): number {
     let result = 0;
 
     for (let part of input.split(" ")) {
       let normal = part.trim().toLowerCase();
       let weight = 65535;
-      while (normal.length > 0) {
-        const rune = this.decodeRuneInStr(normal);
-        normal = normal.slice(rune.size);
-        const piece = rune.rune * weight;
+      for (let c of normal) {
+        const rune = c.codePointAt(0);
+        const piece = rune * weight;
         result += piece
-        weight = weight / 4
+        weight = Math.floor(weight / 4 )
       }
     }
 
-    return 0;
+    return result;
   }
 
-  // TODO (Michal): how to do it in JS????
-  private decodeRuneInStr(val: string): RuneVal {
-    return {rune: 0, size: 0};
-  }
-
-  private static g1(hash: number): string {
-    return hash.toString(16);
+  static g1(root: number, leaf: number): string {
+    const result = root.toString(16).padStart(8, '0') + leaf.toString(16).padStart(8, '0');
+    return result;
   }
 }
