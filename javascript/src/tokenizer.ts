@@ -1,13 +1,8 @@
 import * as crypto from "crypto";
 import * as fnv from "./fnv1a"
-import {Anchor, G1Claim, G1Consent, G1Source, G1Token, SourceType} from "../../javascript/src/protocol";
+import {Anchor, G1Consent, G1Token} from "./protocol";
 
-type RuneVal = {
-  rune: number,
-  size: number
-};
-
-export class G1TokeBuilder {
+export class G1TokenBuilder {
   private contacts: string[];
   private day: number;
   private month: number;
@@ -35,7 +30,7 @@ export class G1TokeBuilder {
   addContacts(...contacts: string[]) {
 
     for (let i =0; i < contacts.length; i++) {
-      let normContact = G1TokeBuilder.normalizeContact(this.defaultIntlCode, contacts[i]);
+      let normContact = G1TokenBuilder.normalizeContact(this.defaultIntlCode, contacts[i]);
       if (normContact) {
         this.contacts.push(normContact);
       }
@@ -67,9 +62,9 @@ export class G1TokeBuilder {
     return this;
   }
 
-  getData(sourceType: SourceType): Anchor[] {
+  getData(): Anchor[] {
     const result: Anchor[] = [];
-    this.getTokens(sourceType).forEach((value, key) => {
+    this.getTokens().forEach((value, key) => {
       result.push({anchor: key, g1Token: value});
     })
 
@@ -77,11 +72,11 @@ export class G1TokeBuilder {
   }
 
   // @ts-ignore
-  getTokens(sourceType: SourceType): Map<string, G1Token[]> {
+  getTokens(): Map<string, G1Token[]> {
     let result = new Map<string, G1Token[]>();
 
     for (let contact of this.contacts) {
-      let anchorHash = G1TokeBuilder.anchorHash(contact);
+      let anchorHash = G1TokenBuilder.anchorHash(contact);
       result.set(anchorHash, []);
       // fill in consents
       const consents: G1Consent[] = [];
@@ -90,12 +85,11 @@ export class G1TokeBuilder {
       });
 
       if (this.name) {
-        let root = G1TokeBuilder.g1Root(anchorHash);
-        const t = G1TokeBuilder.g1(root, G1TokeBuilder.g1fuzzyHash(this.name))
+        let root = G1TokenBuilder.g1Root(anchorHash);
+        const t = G1TokenBuilder.g1(root, G1TokenBuilder.g1fuzzyHash(this.name))
         let token: G1Token = new G1Token(
             t,
             2,
-            sourceType != "NONE" ? [{type: sourceType, updateTime: this.updated}] : [],
             consents
         ) ;
 
@@ -103,12 +97,11 @@ export class G1TokeBuilder {
       }
 
       if (this.day > 0 && this.month > 0 && this.year > 0) {
-        let root = G1TokeBuilder.g1Root(`${anchorHash}${this.day}${this.month}${this.year}`);
+        let root = G1TokenBuilder.g1Root(`${anchorHash}${this.day}${this.month}${this.year}`);
 
         let token: G1Token = new G1Token(
-            G1TokeBuilder.g1(root, 0),
+            G1TokenBuilder.g1(root, 0),
             3,
-            sourceType != "NONE" ? [{type: sourceType, updateTime: this.updated}] : [],
             consents
         );
 
@@ -116,9 +109,8 @@ export class G1TokeBuilder {
 
         if (this.name) {
           let token: G1Token = new G1Token(
-              G1TokeBuilder.g1(root, G1TokeBuilder.g1fuzzyHash(this.name)),
+              G1TokenBuilder.g1(root, G1TokenBuilder.g1fuzzyHash(this.name)),
               5,
-              sourceType != "NONE" ? [{type: sourceType, updateTime: this.updated}] : [],
               consents
           );
 
@@ -163,7 +155,7 @@ export class G1TokeBuilder {
   }
 
   static g1Root(input: string): number {
-    let hash = G1TokeBuilder.sha256(input)
+    let hash = G1TokenBuilder.sha256(input)
     return fnv.fnv1a(hash)
   }
 

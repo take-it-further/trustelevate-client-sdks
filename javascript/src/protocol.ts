@@ -1,12 +1,4 @@
 
-export type SourceType = 'NONE' | 'SELF' | 'DUMMY' | 'WONDE';
-
-export type G1Source = {
-  uid?: string;
-  type: SourceType;
-  updateTime: Date;
-}
-
 export type G1Consent = {
   uid?: string;
   subject: string;
@@ -18,13 +10,11 @@ export type G1Consent = {
 export class G1Token {
   readonly hash: string;
   readonly score: number;
-  readonly g1Source?: G1Source[];
   readonly g1Consent: G1Consent[];
 
-  constructor(hash: string, score: number, source: G1Source[], consent: G1Consent[]) {
+  constructor(hash: string, score: number, consent: G1Consent[]) {
     this.hash = hash;
     this.score = score;
-    this.g1Source = source;
     this.g1Consent = consent;
   }
 
@@ -68,10 +58,6 @@ export class G1Token {
   g1localHashComponent(hash: string): number {
     return parseInt(hash, 16) << 32 >> 32;
   }
-}
-
-export type G1Claim = {
-  data: Map<string, string[]>
 }
 
 export type Anchor = {
