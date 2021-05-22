@@ -62,64 +62,37 @@ export class G1TokenBuilder {
     return this;
   }
 
-  getData(): Anchor[] {
+  build(): Anchor[] {
     const result: Anchor[] = [];
-    this.getTokens().forEach((value, key) => {
-      result.push({anchor: key, g1Token: value});
-    })
 
-    return result;
-  }
-
-  // @ts-ignore
-  getTokens(): Map<string, G1Token[]> {
-    let result = new Map<string, G1Token[]>();
-
-    for (let contact of this.contacts) {
+    this.contacts.forEach((contact) => {
       let anchorHash = G1TokenBuilder.anchorHash(contact);
-      result.set(anchorHash, []);
       // fill in consents
       const consents: G1Consent[] = [];
       this.subjects.forEach((value, key) => {
         consents.push({subject: key, requestTime: value});
       });
 
+      const tokens: G1Token[] = [];
       if (this.name) {
         let root = G1TokenBuilder.g1Root(anchorHash);
         const t = G1TokenBuilder.g1(root, G1TokenBuilder.g1fuzzyHash(this.name))
-        let token: G1Token = new G1Token(
-            t,
-            2,
-            consents
-        ) ;
-
-        result.get(anchorHash).push(token);
+        tokens.push(new G1Token(t, 2, consents));
       }
 
       if (this.day > 0 && this.month > 0 && this.year > 0) {
         let root = G1TokenBuilder.g1Root(`${anchorHash}${this.day}${this.month}${this.year}`);
-
-        let token: G1Token = new G1Token(
-            G1TokenBuilder.g1(root, 0),
-            3,
-            consents
-        );
-
-        result.get(anchorHash).push(token);
+        tokens.push(new G1Token(G1TokenBuilder.g1(root, 0), 3, consents));
 
         if (this.name) {
-          let token: G1Token = new G1Token(
-              G1TokenBuilder.g1(root, G1TokenBuilder.g1fuzzyHash(this.name)),
-              5,
-              consents
-          );
-
-          result.get(anchorHash).push(token);
+          tokens.push(new G1Token(G1TokenBuilder.g1(root, G1TokenBuilder.g1fuzzyHash(this.name)), 5, consents));
         }
       }
 
-      return result;
-    }
+      result.push({anchor: anchorHash, g1Token: tokens})
+    })
+    return result;
+
   }
 
   static normalizeContact(defaultIntlCode: string, contact: string): string {

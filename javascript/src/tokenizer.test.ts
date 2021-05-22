@@ -47,8 +47,9 @@ describe('G1 Token Builder', () => {
         const b = new G1TokenBuilder(defaultIntlCode)
             .setName("Elsie Allen")
             .setDateOfBirth("05.05.2009")
-            .addContacts("07333452934");
-        const data = b.getData()
+            .addContacts("07333452934", "hello@example.com");
+        const data = b.build()
+        expect(data.length).to.equal(2);
         expect(data[0].anchor).to.equal("g1:07eb5de568abbde396ec20264c88ac5fd9ae7183c5ecd5ce94ae48b5e66f212d");
         expect(data[0].g1Token[0].score).to.equal(2);
         expect(data[0].g1Token[0].hash).to.equal("1eeb4214010df6e2");
