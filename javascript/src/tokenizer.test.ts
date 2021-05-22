@@ -20,7 +20,7 @@ describe('G1 Token Builder', () => {
     })
 
     it('should generate precise fnv1a hash ', () => {
-        expect(fnv.fnv1a(new Buffer("🦄🌈"))).to.equal(2868248295)
+        expect(fnv.fnv1a(Buffer.from("🦄🌈"))).to.equal(2868248295)
     })
 
     it('should generate precise sha256 hash ', () => {
@@ -30,10 +30,6 @@ describe('G1 Token Builder', () => {
     it('should generate precise g1 root ', () => {
         expect(G1TokenBuilder.g1Root("g1:07eb5de568abbde396ec20264c88ac5fd9ae7183c5ecd5ce94ae48b5e66f212d")).to.equal(518734356)
     })
-
-    // it('should generate precise g1 root hash', () => {
-    //     expect(G1TokenBuilder.g1RootHash("g1:07eb5de568abbde396ec20264c88ac5fd9ae7183c5ecd5ce94ae48b5e66f212d")).to.equal(2227947094331621376)
-    // })
 
     it('should generate precise g1 fuzzy hash', () => {
         expect(G1TokenBuilder.g1fuzzyHash("Elsie Allen")).to.equal(17692386)
@@ -51,11 +47,8 @@ describe('G1 Token Builder', () => {
         const data = b.build()
         expect(data.length).to.equal(2);
         expect(data[0].anchor).to.equal("g1:07eb5de568abbde396ec20264c88ac5fd9ae7183c5ecd5ce94ae48b5e66f212d");
-        expect(data[0].g1Token[0].score).to.equal(2);
         expect(data[0].g1Token[0].hash).to.equal("1eeb4214010df6e2");
-        expect(data[0].g1Token[1].score).to.equal(3);
         expect(data[0].g1Token[1].hash).to.equal("193cbd7700000000");
-        expect(data[0].g1Token[2].score).to.equal(5);
         expect(data[0].g1Token[2].hash).to.equal("193cbd77010df6e2");
         console.log(data)
     })
