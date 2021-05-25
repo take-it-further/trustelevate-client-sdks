@@ -50,7 +50,6 @@ describe('G1 Token Builder', () => {
         expect(data[0].g1Token[0].hash).to.equal("1eeb4214010df6e2");
         expect(data[0].g1Token[1].hash).to.equal("193cbd7700000000");
         expect(data[0].g1Token[2].hash).to.equal("193cbd77010df6e2");
-        console.log(data)
     })
     //.addConsent("Zonk", time.Unix(0, 0))
     //.addConsent(subject, new Date())
