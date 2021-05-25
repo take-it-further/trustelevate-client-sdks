@@ -49,7 +49,7 @@ export class G1TokenBuilder {
   setDateOfBirth(date: string) {
     let normDate = date ? date.trim() : undefined;
     if (normDate) {
-      let parts = normDate.split(/\../);
+      let parts = normDate.split(/[.-]/);
       if (parts.length != 3) {
         throw Error("Invalid date. Should match pattern: dd-MM-yyyy");
       }
@@ -80,8 +80,10 @@ export class G1TokenBuilder {
         tokens.push(new G1Token(t, consents));
       }
 
+      const padZero = (val, size) => String(val).padStart(size, '0');
+
       if (this.day > 0 && this.month > 0 && this.year > 0) {
-        let root = G1TokenBuilder.g1Root(`${anchorHash}${this.day}${this.month}${this.year}`);
+        let root =G1TokenBuilder.g1Root(`${anchorHash}${padZero(this.day,2)}${padZero(this.month, 2)}${this.year}`);
         tokens.push(new G1Token(G1TokenBuilder.g1(root, 0), consents));
 
         if (this.name) {
@@ -149,7 +151,6 @@ export class G1TokenBuilder {
   }
 
   static g1(root: number, leaf: number): string {
-    const result = root.toString(16).padStart(8, '0') + leaf.toString(16).padStart(8, '0');
-    return result;
+    return root.toString(16).padStart(8, '0') + leaf.toString(16).padStart(8, '0');
   }
 }
