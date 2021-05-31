@@ -1,4 +1,4 @@
-import * as crypto from "crypto";
+import * as crypto from "webcrypto";
 import * as fnv from "./fnv1a"
 import {Anchor, G1Consent, G1Token} from "./protocol";
 

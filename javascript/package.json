@@ -22,6 +22,6 @@
   },
   "dependencies": {
     "@types/node": "^15.6.0",
-    "crypto": "^1.0.1"
+    "webcrypto": "^0.1.1"
   }
 }
