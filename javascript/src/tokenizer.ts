@@ -70,7 +70,7 @@ export class G1TokenBuilder {
       // fill in consents
       const consents: G1Consent[] = [];
       this.subjects.forEach((value, key) => {
-        consents.push({subject: key, requestTime: value});
+        consents.push({subject: key, request_time: value});
       });
 
       const tokens: G1Token[] = [];
@@ -90,7 +90,7 @@ export class G1TokenBuilder {
           tokens.push(new G1Token(G1TokenBuilder.g1(root, G1TokenBuilder.g1fuzzyHash(this.name)), consents));
         }
       }
-      result.push({anchor: anchorHash, g1Token: tokens})
+      result.push({anchor: anchorHash, g1token: tokens})
     })
     return result;
 

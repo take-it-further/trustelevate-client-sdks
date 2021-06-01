@@ -8,7 +8,7 @@
     "/dist"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "mocha --require ts-node/register 'src/**/*.test.ts' && tsc",
     "test": "mocha --require ts-node/register 'src/**/*.test.ts'"
   },
   "license": "MIT",
