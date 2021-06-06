@@ -66,6 +66,7 @@ export class G1TokenBuilder {
     const result: Anchor[] = [];
 
     this.contacts.forEach((contact) => {
+      console.log(contact)
       let anchorHash = G1TokenBuilder.anchorHash(contact);
       // fill in consents
       const consents: G1Consent[] = [];
@@ -100,14 +101,12 @@ export class G1TokenBuilder {
     let normContact = contact ? contact.trim() : "";
 
     if (normContact.indexOf("@") < 0) {
-      let tmp = normContact
-        .replace(" ", "")
-        .replace("(", "")
-        .replace(")", "")
-        .replace("+", "00");
-
-      if (!tmp.startsWith("00")) {
-        normContact = defaultIntlCode + (tmp.indexOf("0") == 0 ? tmp.slice(1) : tmp);
+      normContact = normContact.replace(/\s/gi, "")
+      normContact = normContact.replace("(0)", "")
+      normContact = normContact.replace(/\(|\)/gi, "")
+      normContact = normContact.replace("+", "00");
+      if (!normContact.startsWith("00")) {
+        normContact = defaultIntlCode + (normContact.indexOf("0") == 0 ? normContact.slice(1) : normContact);
       }
     }
 

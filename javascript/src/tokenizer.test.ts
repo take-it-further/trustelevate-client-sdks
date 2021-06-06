@@ -12,6 +12,8 @@ describe('G1 Token Builder', () => {
 
     it('should normalize contact precisely', () => {
         expect(G1TokenBuilder.normalizeContact(defaultIntlCode, " 01632 3380011")).to.equal('004416323380011')
+        expect(G1TokenBuilder.normalizeContact(defaultIntlCode, " +44 1632 3380011")).to.equal('004416323380011')
+        expect(G1TokenBuilder.normalizeContact(defaultIntlCode, " +44 (0) 1632 3380011")).to.equal('004416323380011')
         expect(G1TokenBuilder.normalizeContact(defaultIntlCode,  " 01632 811902")).to.equal('00441632811902')
     })
 
@@ -61,4 +63,5 @@ describe('G1 Token Builder', () => {
         expect(data[0].g1token[2].g1consent[0].subject).to.equal("Zonk");
         expect(data[0].g1token[2].g1consent[0].request_time).to.equal(consentDate);
     })
+
 })
