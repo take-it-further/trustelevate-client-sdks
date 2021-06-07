@@ -66,7 +66,6 @@ export class G1TokenBuilder {
     const result: Anchor[] = [];
 
     this.contacts.forEach((contact) => {
-      console.log(contact)
       let anchorHash = G1TokenBuilder.anchorHash(contact);
       // fill in consents
       const consents: G1Consent[] = [];
