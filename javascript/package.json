@@ -1,6 +1,6 @@
 {
-  "name": "veripass-sdk",
-  "version": "1.0.0",
+  "name": "@trustelevate/veripass-sdk",
+  "version": "1.0.1",
   "description": "Veripass SDK Client Library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -23,5 +23,6 @@
   "dependencies": {
     "@types/node": "^15.6.0",
     "webcrypto": "^0.1.1"
-  }
+  },
+  "author": ""
 }

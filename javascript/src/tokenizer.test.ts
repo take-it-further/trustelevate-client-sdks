@@ -17,8 +17,15 @@ describe('G1 Token Builder', () => {
         expect(G1TokenBuilder.normalizeContact(defaultIntlCode,  " 01632 811902")).to.equal('00441632811902')
     })
 
+
     it('should generate precise g1 anchor hash', () => {
-        expect(G1TokenBuilder.anchorHash("00447333452934")).to.equal('g1:07eb5de568abbde396ec20264c88ac5fd9ae7183c5ecd5ce94ae48b5e66f212d')
+        const b1 = new G1TokenBuilder("0044")
+        b1.addContacts("00447333452934")
+        expect(b1.build()[0].anchor).to.equal('g1:07eb5de568abbde396ec20264c88ac5fd9ae7183c5ecd5ce94ae48b5e66f212d')
+        const b2 = new G1TokenBuilder("0044")
+        b2.addContacts("+447333452934")
+        expect(b2.build()[0].anchor).to.equal('g1:07eb5de568abbde396ec20264c88ac5fd9ae7183c5ecd5ce94ae48b5e66f212d')
+        expect(b2.build()[0].anchor).to.equal('g1:07eb5de568abbde396ec20264c88ac5fd9ae7183c5ecd5ce94ae48b5e66f212d')
     })
 
     it('should generate precise fnv1a hash ', () => {

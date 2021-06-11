@@ -1,15 +1,11 @@
-# test
+# installation 
 
-    yarn test
+    yarn add veripass-sdk 
 
-# build
+# usage
 
-    yarn build
+    import * as sdk from 'veripass-sdk';
 
-# create an installation tar
-
-    yarn pack
-
-this can be then installed in a nodejs application by doing:
-
-    yarn add ../client-sdks/javascript/veripass-sdk-v1.0.0.tgz
+    const builder = new sdk.G1TokenBuilder("0044");
+    builder.addContacts(this.contacts[0]);
+    b.build(); //returns a list of tokenized anchors
