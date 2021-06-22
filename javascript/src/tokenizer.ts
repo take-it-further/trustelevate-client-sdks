@@ -90,7 +90,7 @@ export class G1TokenBuilder {
           tokens.push(new G1Token(G1TokenBuilder.g1(root, G1TokenBuilder.g1fuzzyHash(this.name)), consents));
         }
       }
-      result.push({anchor: anchorHash, g1token: tokens})
+      result.push({anchor: anchorHash, verified: false, g1token: tokens})
     })
     return result;
 

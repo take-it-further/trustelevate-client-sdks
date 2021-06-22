@@ -1,5 +1,6 @@
 export type Anchor = {
   anchor: string;
+  verified: boolean;
   g1token: G1Token[];
 }
 
