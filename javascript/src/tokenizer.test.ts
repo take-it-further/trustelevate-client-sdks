@@ -52,7 +52,7 @@ describe('G1 Token Builder', () => {
         let consentDate = new Date();
         const b = new G1TokenBuilder(defaultIntlCode)
             .setName("Elsie Allen")
-            .setDateOfBirth("05.05.2009")
+            .setDateOfBirth(new Date("5.5.2009"))
             .addContacts("07333452934", "hello@example.com")
             .addConsent("Zonk", consentDate);
         const data = b.build()

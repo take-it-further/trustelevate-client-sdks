@@ -46,19 +46,10 @@ export class G1TokenBuilder {
     return this;
   }
 
-  setDateOfBirth(date: string) {
-    let normDate = date ? date.trim() : undefined;
-    if (normDate) {
-      let parts = normDate.split(/[.-]/);
-      if (parts.length != 3) {
-        throw Error("Invalid date. Should match pattern: dd-MM-yyyy");
-      }
-
-      this.day = parseInt(parts[0]);
-      this.month = parseInt(parts[1]);
-      this.year = parseInt(parts[2]);
-    }
-
+  setDateOfBirth(date: Date) {
+    this.day = date.getDate();
+    this.month = date.getMonth() + 1;
+    this.year = date.getFullYear();
     return this;
   }
 
