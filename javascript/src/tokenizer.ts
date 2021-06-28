@@ -47,9 +47,10 @@ export class G1TokenBuilder {
   }
 
   setDateOfBirth(date: Date) {
-    this.day = date.getDate();
-    this.month = date.getMonth() + 1;
-    this.year = date.getFullYear();
+    const d = new Date(date)
+    this.day = d.getDate();
+    this.month = d.getMonth() + 1;
+    this.year = d.getFullYear();
     return this;
   }
 
