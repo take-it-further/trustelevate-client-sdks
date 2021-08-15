@@ -6,6 +6,7 @@ export type Anchor = {
 
 export class G1Token {
   readonly hash: string;
+  verified: number;
   readonly g1consent: G1Consent[];
 
   constructor(hash: string, consent: G1Consent[]) {
@@ -16,8 +17,8 @@ export class G1Token {
 
 export type G1Consent = {
   subject: string;
+  request_time: Date;
   approve_time?: Date;
-  request_time?: Date;
   reject_time?: Date;
 }
 
