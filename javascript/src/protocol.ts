@@ -6,11 +6,13 @@ export type Anchor = {
 
 export class G1Token {
   readonly hash: string;
+  readonly score: number
   verified: number;
   readonly g1consent: G1Consent[];
 
-  constructor(hash: string, consent: G1Consent[]) {
+  constructor(hash: string, score: number, consent: G1Consent[]) {
     this.hash = hash;
+    this.score = score;
     this.g1consent = consent;
   }
 }
