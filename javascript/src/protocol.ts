@@ -22,5 +22,6 @@ export type G1Consent = {
   request_time: Date;
   approve_time?: Date;
   reject_time?: Date;
+  info?: string;
 }
 
