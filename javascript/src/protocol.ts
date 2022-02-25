@@ -18,14 +18,14 @@ export class G1Token {
 }
 
 export class G1Consent {
-  readonly name?: string; // only added at the edge
+  name?: string; // only added at the edge
   readonly subject: string;
   readonly request_time: Date;
   readonly customer_id: string;
-  approve_time?: Date;
-  reject_time?: Date;
-  info?: string;
-  id?: string;
+  readonly approve_time?: Date;
+  readonly reject_time?: Date;
+  readonly info?: string;
+  readonly id?: string;
 
   constructor(name: string, subject: string, request_time: Date, customer_id: string) {
     this.name = name;
