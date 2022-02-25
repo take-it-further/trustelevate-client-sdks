@@ -17,11 +17,71 @@ export class G1Token {
   }
 }
 
-export type G1Consent = {
-  subject: string;
-  request_time: Date;
+export class G1Consent {
+  readonly name?: string; // only added at the edge
+  readonly subject: string;
+  readonly request_time: Date;
+  readonly customer_id: string;
   approve_time?: Date;
   reject_time?: Date;
   info?: string;
+  id?: string;
+
+  constructor(name: string, subject: string, request_time: Date, customer_id: string) {
+    this.name = name;
+    this.subject = subject;
+    this.request_time = request_time;
+    this.customer_id = customer_id;
+  }
+
+  status(): string {
+    let result = "PENDING";
+    if (this.approve_time !== undefined && validTs(this.approve_time)) {
+      result = "APPROVED";
+    }
+    if (this.reject_time !== undefined && validTs(this.reject_time) && (!this.approve_time || !validTs(this.approve_time) || this.approve_time < this.reject_time)) {
+      result = "REJECTED";
+    }
+    return result;
+  }
+  updateTime(): Date {
+    let result = new Date(this.request_time);
+    if (this.approve_time !== undefined && validTs(this.approve_time)) {
+      result = new Date(this.approve_time);
+    }
+    if (this.reject_time !== undefined && validTs(this.reject_time) && (!this.approve_time || !validTs(this.approve_time) || this.approve_time < this.reject_time)) {
+      result = new Date(this.reject_time);
+    }
+    return result;
+  }
 }
+
+function validTs(d: undefined | Date): boolean {
+  return d !== undefined && new Date(d).getUTCSeconds() > 0;
+}
+
+export class ConsentReceipt {
+  score: number;
+  updated: Date;
+  age: number;
+  id?: string;
+  pending: string[] = [];
+  approved: string[] = [];
+  rejected: string[] = [];
+  constructor(score:number, updated: Date, age: number, subjects: Map<string, string>, id?: string) {
+    this.score = score;
+    this.updated = updated;
+    this.age = age;
+    this.id = id;
+    subjects.forEach((k,v) => {
+      switch(k) {
+        case "UNKNOWN": this.pending.push(v);break;
+        case "PENDING": this.pending.push(v);break;
+        case "APPROVED": this.approved.push(v);break;
+        case "REJECTED": this.rejected.push(v);break;
+      }
+    })
+  }
+}
+
 

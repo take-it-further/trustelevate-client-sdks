@@ -62,7 +62,7 @@ export class G1TokenBuilder {
       // fill in consents
       const consents: G1Consent[] = [];
       this.subjects.forEach((value, key) => {
-        consents.push({subject: key, request_time: value});
+        consents.push(new G1Consent("", key, value, ""));
       });
 
       const tokens: G1Token[] = [];
