@@ -19,6 +19,7 @@ export class G1Token {
 
 export class G1Consent {
   name?: string; // only added at the edge
+  readonly age: number;
   readonly subject: string;
   readonly request_time: Date;
   readonly customer_id: string;
