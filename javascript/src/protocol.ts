@@ -7,7 +7,6 @@ export type Anchor = {
 export class G1Token {
   readonly hash: string;
   readonly score: number
-  verified: number;
   readonly g1consent: G1Consent[];
 
   constructor(hash: string, score: number, consent: G1Consent[]) {
@@ -46,11 +45,14 @@ export class G1Consent {
     return result;
   }
   updateTime(): Date {
-    let result = new Date(this.request_time);
-    if (this.approve_time !== undefined && validTs(this.approve_time)) {
+    let result = new Date(0);
+    if (validTs(this.request_time)) {
+      result = new Date(this.request_time);
+    }
+    if (validTs(this.approve_time)) {
       result = new Date(this.approve_time);
     }
-    if (this.reject_time !== undefined && validTs(this.reject_time) && (!this.approve_time || !validTs(this.approve_time) || this.approve_time < this.reject_time)) {
+    if (validTs(this.reject_time) && (!this.approve_time || !validTs(this.approve_time) || this.approve_time < this.reject_time)) {
       result = new Date(this.reject_time);
     }
     return result;
@@ -58,7 +60,7 @@ export class G1Consent {
 }
 
 function validTs(d: undefined | Date): boolean {
-  return d !== undefined && new Date(d).getUTCSeconds() > 0;
+  return d !== undefined && new Date(d).getTime() > 0;
 }
 
 export class ConsentReceipt {

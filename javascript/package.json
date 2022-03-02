@@ -1,6 +1,6 @@
 {
   "name": "veripass-sdk",
-  "version": "1.2.13",
+  "version": "1.2.19",
   "description": "Veripass SDK Client Library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
