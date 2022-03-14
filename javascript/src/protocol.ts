@@ -25,7 +25,7 @@ export class G1Consent {
   readonly approve_time?: Date;
   readonly reject_time?: Date;
   readonly info?: string;
-  readonly id?: string;
+  readonly custom_id?: string;
 
   constructor(name: string, subject: string, request_time: Date, customer_id: string) {
     this.name = name;
