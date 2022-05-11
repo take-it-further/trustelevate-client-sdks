@@ -1,5 +1,5 @@
 {
-  "name": "veripass-client-demo",
+  "name": "trustelevate-client-demo",
   "version": "1.0.0",
   "description": "Examplr nodejs server that uses Veripass API",
   "main": "server.js",

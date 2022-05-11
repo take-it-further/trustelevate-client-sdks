@@ -1,5 +1,5 @@
 {
-  "name": "veripass-sdk",
+  "name": "trustelevate-sdk",
   "version": "1.2.20",
   "description": "Veripass SDK Client Library",
   "main": "dist/index.js",

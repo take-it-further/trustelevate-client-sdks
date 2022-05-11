@@ -1,5 +1,5 @@
 const express = require('express');
-const veripass = require('./veripass-client/AuthService');
+const trustelevate = require('./trustelevate-client/AuthService');
 const app = express();
 
 app.set("views", "./");
@@ -9,8 +9,8 @@ app.get('/', (req, res) => {
     const apiKey = "trd"
     const apiSalt = "123ABC456DEF789ABC123DEF456ABC12"
     const returnUrl = "http://blackdice.com/demo?mac=xyz"
-    let url = "https://api.veripass.uk/v2/p/vpr/iframe?return=" + returnUrl
-    url = veripass.signUrl(url, apiKey, apiSalt);
+    let url = "https://api.trustelev8.uk/v2/p/vpr/iframe?return=" + returnUrl
+    url = trustelevate.signUrl(url, apiKey, apiSalt);
     res.render('index', {signature: url});
 });
 
