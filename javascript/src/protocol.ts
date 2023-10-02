@@ -6,7 +6,10 @@ export type Anchor = {
 
 export class G1Token {
   readonly hash: string;
+  // Deprecated. use best_score.
   readonly score: number
+  readonly matching: number
+  readonly best_score: number
   readonly g1consent: G1Consent[];
 
   constructor(hash: string, score: number, consent: G1Consent[]) {
@@ -64,7 +67,10 @@ function validTs(d: undefined | Date): boolean {
 }
 
 export class ConsentReceipt {
+  // Deprecated. use best_score.
   score: number;
+  matching: number;
+  best_score: number;
   updated: Date;
   age: number;
   id?: string;
