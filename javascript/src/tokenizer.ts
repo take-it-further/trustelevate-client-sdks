@@ -8,6 +8,7 @@ export class G1TokenBuilder {
   private month: number;
   private year: number;
   private name: string;
+  private self: boolean;
   // @ts-ignore
   private subjects: Map<string, Date>;
   private readonly updated: Date
@@ -54,6 +55,11 @@ export class G1TokenBuilder {
     return this;
   }
 
+  setSelf(self: boolean) {
+    this.self = self
+    return this;
+  }
+
   build(): Anchor[] {
     const result: Anchor[] = [];
 
@@ -69,17 +75,17 @@ export class G1TokenBuilder {
       if (this.name) {
         let root = G1TokenBuilder.g1Root(anchorHash);
         const t = G1TokenBuilder.g1(root, G1TokenBuilder.g1fuzzyHash(this.name))
-        tokens.push(new G1Token(t, 2, consents));
+        tokens.push(new G1Token(t, 2, this.self, consents));
       }
 
       const padZero = (val, size) => String(val).padStart(size, '0');
 
       if (this.day > 0 && this.month > 0 && this.year > 0) {
         let root =G1TokenBuilder.g1Root(`${anchorHash}${padZero(this.day,2)}${padZero(this.month, 2)}${this.year}`);
-        tokens.push(new G1Token(G1TokenBuilder.g1(root, 0), 3, consents));
+        tokens.push(new G1Token(G1TokenBuilder.g1(root, 0), 3, this.self, consents));
 
         if (this.name) {
-          tokens.push(new G1Token(G1TokenBuilder.g1(root, G1TokenBuilder.g1fuzzyHash(this.name)), 5, consents));
+          tokens.push(new G1Token(G1TokenBuilder.g1(root, G1TokenBuilder.g1fuzzyHash(this.name)), 5, this.self, consents));
         }
       }
       result.push({anchor: anchorHash, verified: false, g1token: tokens})
