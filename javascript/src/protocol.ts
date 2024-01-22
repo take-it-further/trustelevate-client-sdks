@@ -1,3 +1,5 @@
+import {validateAgeBand} from "./ageband";
+
 export type Anchor = {
   anchor: string;
   verified: boolean;
@@ -24,6 +26,7 @@ export class G1Token {
 export class G1Consent {
   name?: string; // only added at the edge
   readonly age: number;
+  readonly age_band: string;
   readonly subject: string;
   readonly request_time: Date;
   readonly customer_id: string;
@@ -75,6 +78,7 @@ export class ConsentReceipt {
   best_score: number;
   updated: Date;
   age: number;
+  age_band: string;
   id?: string;
   pending: string[] = [];
   approved: string[] = [];
@@ -92,6 +96,25 @@ export class ConsentReceipt {
         case "REJECTED": this.rejected.push(v);break;
       }
     })
+  }
+
+  setAgeBand(ageBand: string): ConsentReceipt {
+    try {
+      validateAgeBand(ageBand)
+      this.age_band = ageBand
+      return this
+    } catch (e) {
+      return this
+    }
+  }
+
+  isAgeEligible(): boolean {
+    try {
+      const [min, max] = validateAgeBand(this.age_band)
+      return this.age >= min && this.age <= max
+    } catch (e) {
+      return false
+    }
   }
 }
 

@@ -1,6 +1,6 @@
 {
   "name": "trustelevate-sdk",
-  "version": "1.2.22",
+  "version": "1.2.23",
   "description": "TrustElev8 SDK Client Library",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
