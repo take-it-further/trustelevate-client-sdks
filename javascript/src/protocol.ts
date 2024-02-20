@@ -83,18 +83,18 @@ export class ConsentReceipt {
   pending: string[] = [];
   approved: string[] = [];
   rejected: string[] = [];
+}
 
-  splitSubjects(subjects: Map<string, string>): ConsentReceipt {
-    subjects.forEach((k,v) => {
-      switch(k) {
-        case "UNKNOWN": this.pending.push(v);break;
-        case "PENDING": this.pending.push(v);break;
-        case "APPROVED": this.approved.push(v);break;
-        case "REJECTED": this.rejected.push(v);break;
-      }
-    })
-    return this
-  }
+export function splitReceiptSubjects(cr: ConsentReceipt): ConsentReceipt {
+  cr.subjects.forEach((k,v) => {
+    switch(k) {
+      case "UNKNOWN": cr.pending.push(v);break;
+      case "PENDING": cr.pending.push(v);break;
+      case "APPROVED": cr.approved.push(v);break;
+      case "REJECTED": cr.rejected.push(v);break;
+    }
+  })
+  return cr
 }
 
 
