@@ -1,4 +1,3 @@
-import {validateAgeBand} from "./ageband";
 
 export type Anchor = {
   anchor: string;
@@ -73,24 +72,19 @@ function validTs(d: undefined | Date): boolean {
 }
 
 export class ConsentReceipt {
-  // Deprecated. use best_score.
-  score: number;
   matching: number;
   best_score: number;
+  subjects: Map<string, string>
   updated: Date;
-  age: number;
   // Deprecated, use age_bands.
-  age_band: string;
-  age_bands: Map<string, number>
+  age_bands: Map<string, boolean>
   id?: string;
+
   pending: string[] = [];
   approved: string[] = [];
   rejected: string[] = [];
-  constructor(score:number, updated: Date, age: number, subjects: Map<string, string>, id?: string) {
-    this.score = score;
-    this.updated = updated;
-    this.age = age;
-    this.id = id;
+
+  splitSubjects(subjects: Map<string, string>): ConsentReceipt {
     subjects.forEach((k,v) => {
       switch(k) {
         case "UNKNOWN": this.pending.push(v);break;
@@ -99,27 +93,7 @@ export class ConsentReceipt {
         case "REJECTED": this.rejected.push(v);break;
       }
     })
-  }
-
-  // Deprecated.
-  setAgeBand(ageBand: string): ConsentReceipt {
-    try {
-      validateAgeBand(ageBand)
-      this.age_band = ageBand
-      return this
-    } catch (e) {
-      return this
-    }
-  }
-
-  // Deprecated.
-  isAgeEligible(): boolean {
-    try {
-      const [min, max] = validateAgeBand(this.age_band)
-      return this.age >= min && this.age <= max
-    } catch (e) {
-      return false
-    }
+    return this
   }
 }
 
