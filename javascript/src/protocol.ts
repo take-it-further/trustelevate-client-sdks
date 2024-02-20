@@ -79,7 +79,9 @@ export class ConsentReceipt {
   best_score: number;
   updated: Date;
   age: number;
+  // Deprecated, use age_bands.
   age_band: string;
+  age_bands: Map<string, number>
   id?: string;
   pending: string[] = [];
   approved: string[] = [];
@@ -99,6 +101,7 @@ export class ConsentReceipt {
     })
   }
 
+  // Deprecated.
   setAgeBand(ageBand: string): ConsentReceipt {
     try {
       validateAgeBand(ageBand)
@@ -109,6 +112,7 @@ export class ConsentReceipt {
     }
   }
 
+  // Deprecated.
   isAgeEligible(): boolean {
     try {
       const [min, max] = validateAgeBand(this.age_band)

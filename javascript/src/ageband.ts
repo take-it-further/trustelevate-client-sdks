@@ -1,3 +1,5 @@
+// Deprecated, rely on the response from the back end: ConsentReceipt.age_bands.
+
 // A regular expression to match the age band format
 const ageBandPattern = /^(\d{1,2})([+-])(\d{0,2})$/;
 
