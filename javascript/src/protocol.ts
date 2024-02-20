@@ -86,6 +86,9 @@ export class ConsentReceipt {
 }
 
 export function splitReceiptSubjects(cr: ConsentReceipt): ConsentReceipt {
+  cr.pending = []
+  cr.approved = []
+  cr.rejected = []
   cr.subjects.forEach((k,v) => {
     switch(k) {
       case "UNKNOWN": cr.pending.push(v);break;
