@@ -71,33 +71,49 @@ function validTs(d: undefined | Date): boolean {
   return d !== undefined && new Date(d).getTime() > 0;
 }
 
+interface DynamicStringString {
+  [key: string]: string;
+}
+
+interface DynamicStringBoolean {
+  [key: string]: boolean;
+}
+
 export class ConsentReceipt {
   matching: number;
   best_score: number;
-  subjects: Map<string, string>
+  subjects: DynamicStringString
   updated: Date;
-  // Deprecated, use age_bands.
-  age_bands: Map<string, boolean>
+  age_bands: DynamicStringBoolean
   id?: string;
 
-  pending: string[] = [];
-  approved: string[] = [];
-  rejected: string[] = [];
-}
-
-export function splitReceiptSubjects(cr: ConsentReceipt): ConsentReceipt {
-  cr.pending = []
-  cr.approved = []
-  cr.rejected = []
-  cr.subjects.forEach((k,v) => {
-    switch(k) {
-      case "UNKNOWN": cr.pending.push(v);break;
-      case "PENDING": cr.pending.push(v);break;
-      case "APPROVED": cr.approved.push(v);break;
-      case "REJECTED": cr.rejected.push(v);break;
+  pending(): string[] {
+    let result: string[] = []
+    for (let key in this.subjects) {
+      if (this.subjects[key] === "PENDING" || this.subjects[key] === "UNKNOWN") {
+        result.push(key)
+      }
     }
-  })
-  return cr
+    return result
+  }
+
+  approved(): string[] {
+    let result: string[] = []
+    for (let key in this.subjects) {
+      if (this.subjects[key] === "APPROVED") {
+        result.push(key)
+      }
+    }
+    return result
+  }
+
+  rejected(): string[] {
+    let result: string[] = []
+    for (let key in this.subjects) {
+      if (this.subjects[key] === "REJECTED") {
+        result.push(key)
+      }
+    }
+    return result
+  }
 }
-
-
