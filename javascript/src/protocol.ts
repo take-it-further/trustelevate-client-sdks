@@ -13,12 +13,22 @@ export class G1Token {
   readonly matching: number
   readonly best_score: number
   readonly g1consent: G1Consent[];
+  readonly g1source: G1Source[];
 
   constructor(hash: string, score: number, self: boolean, consent: G1Consent[]) {
     this.hash = hash;
     this.score = score;
     this.self = self
     this.g1consent = consent;
+  }
+}
+
+export class G1Source {
+  readonly type: string;
+  readonly update_time: Date;
+  constructor(type: string, update_time: Date) {
+    this.type = type;
+    this.update_time = update_time;
   }
 }
 
