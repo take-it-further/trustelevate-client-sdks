@@ -1,8 +1,8 @@
 import * as crypto from "webcrypto";
 import * as fnv from "./fnv1a"
-import {Anchor, G1Consent, G1Token} from "./protocol";
+import {Anchor, G1Consent, G2Token} from "./protocol";
 
-export class G1TokenBuilder {
+export class G2TokenBuilder {
   private contacts: string[];
   private day: number;
   private month: number;
@@ -31,7 +31,7 @@ export class G1TokenBuilder {
   addContacts(...contacts: string[]) {
 
     for (let i =0; i < contacts.length; i++) {
-      let normContact = G1TokenBuilder.normalizeContact(this.defaultIntlCode, contacts[i]);
+      let normContact = G2TokenBuilder.normalizeContact(this.defaultIntlCode, contacts[i]);
       if (normContact) {
         this.contacts.push(normContact);
       }
@@ -64,31 +64,30 @@ export class G1TokenBuilder {
     const result: Anchor[] = [];
 
     this.contacts.forEach((contact) => {
-      let anchorHash = G1TokenBuilder.anchorHash(contact);
+      let anchorHash = G2TokenBuilder.anchorHash(contact);
       // fill in consents
       const consents: G1Consent[] = [];
       this.subjects.forEach((value, key) => {
         consents.push(new G1Consent("", key, value, ""));
       });
 
-      const tokens: G1Token[] = [];
+      const tokens: G2Token[] = [];
       if (this.name) {
-        let root = G1TokenBuilder.g1Root(anchorHash);
-        const t = G1TokenBuilder.g1(root, G1TokenBuilder.g1fuzzyHash(this.name))
-        tokens.push(new G1Token(t, 2, this.self, consents));
+        const t = G2TokenBuilder.g1(0, G2TokenBuilder.g1fuzzyHash(this.name))
+        tokens.push(new G2Token(t, 2, this.self, consents));
       }
 
       const padZero = (val, size) => String(val).padStart(size, '0');
 
       if (this.day > 0 && this.month > 0 && this.year > 0) {
-        let root =G1TokenBuilder.g1Root(`${anchorHash}${padZero(this.day,2)}${padZero(this.month, 2)}${this.year}`);
-        tokens.push(new G1Token(G1TokenBuilder.g1(root, 0), 3, this.self, consents));
+        let root =G2TokenBuilder.g1Root(`${contact}${padZero(this.day,2)}${padZero(this.month, 2)}${this.year}`);
+        tokens.push(new G2Token(G2TokenBuilder.g1(root, 0), 3, this.self, consents));
 
         if (this.name) {
-          tokens.push(new G1Token(G1TokenBuilder.g1(root, G1TokenBuilder.g1fuzzyHash(this.name)), 5, this.self, consents));
+          tokens.push(new G2Token(G2TokenBuilder.g1(root, G2TokenBuilder.g1fuzzyHash(this.name)), 5, this.self, consents));
         }
       }
-      result.push({anchor: anchorHash, verified: false, g1token: tokens})
+      result.push({anchor: anchorHash, verified: false, g2token: tokens})
     })
     return result;
 
@@ -115,7 +114,7 @@ export class G1TokenBuilder {
       .update(contact)
       .digest('hex');
 
-    return `g1:${hash}`;
+    return `g2:${hash}`;
   }
 
   static sha256(input: string): Buffer {
@@ -125,7 +124,7 @@ export class G1TokenBuilder {
   }
 
   static g1Root(input: string): number {
-    let hash = G1TokenBuilder.sha256(input)
+    let hash = G2TokenBuilder.sha256(input)
     return fnv.fnv1a(hash)
   }
 

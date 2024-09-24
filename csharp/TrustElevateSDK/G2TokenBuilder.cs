@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
 
-public class G1TokenBuilder(string defaultIntlCode)
+public class G2TokenBuilder(string defaultIntlCode)
 {
   private readonly string defaultIntlCode = defaultIntlCode;
   private readonly List<string> contacts = [];
@@ -16,7 +16,7 @@ public class G1TokenBuilder(string defaultIntlCode)
   private bool self;
   private readonly Dictionary<string, DateTime> subjects = [];
 
-  public G1TokenBuilder AddConsent(string subject, DateTime requestTime)
+  public G2TokenBuilder AddConsent(string subject, DateTime requestTime)
   {
     if (!string.IsNullOrEmpty(subject))
     {
@@ -26,7 +26,7 @@ public class G1TokenBuilder(string defaultIntlCode)
     return this;
   }
 
-  public G1TokenBuilder AddContacts(params string[] contacts)
+  public G2TokenBuilder AddContacts(params string[] contacts)
   {
     foreach (var contact in contacts)
     {
@@ -40,7 +40,7 @@ public class G1TokenBuilder(string defaultIntlCode)
     return this;
   }
 
-  public G1TokenBuilder SetName(string name)
+  public G2TokenBuilder SetName(string name)
   {
     if (!string.IsNullOrEmpty(name))
     {
@@ -49,7 +49,7 @@ public class G1TokenBuilder(string defaultIntlCode)
     return this;
   }
 
-  public G1TokenBuilder SetDateOfBirth(DateTime date)
+  public G2TokenBuilder SetDateOfBirth(DateTime date)
   {
     day = date.Day;
     month = date.Month;
@@ -57,7 +57,7 @@ public class G1TokenBuilder(string defaultIntlCode)
     return this;
   }
 
-  public G1TokenBuilder SetSelf(bool self)
+  public G2TokenBuilder SetSelf(bool self)
   {
     this.self = self;
     return this;
@@ -76,27 +76,26 @@ public class G1TokenBuilder(string defaultIntlCode)
         consents.Add(new G1Consent("", key, value, ""));
       }
 
-      var tokens = new List<G1Token>();
+      var tokens = new List<G2Token>();
       if (!string.IsNullOrEmpty(name))
       {
-        var root = G1Root(anchorHash);
-        var t = G1(root, G1FuzzyHash(name));
-        tokens.Add(new G1Token(t, 2, self, consents));
+        var t = G1(0, G1FuzzyHash(name));
+        tokens.Add(new G2Token(t, 2, self, consents));
       }
 
       if (day > 0 && month > 0 && year > 0)
       {
         var dateString = $"{day:D2}{month:D2}{year}";
-        var root = G1Root(anchorHash + dateString);
-        tokens.Add(new G1Token(G1(root, 0), 3, self, consents));
+        var root = G1Root(contact + dateString);
+        tokens.Add(new G2Token(G1(root, 0), 3, self, consents));
 
         if (!string.IsNullOrEmpty(name))
         {
-          tokens.Add(new G1Token(G1(root, G1FuzzyHash(name)), 5, self, consents));
+          tokens.Add(new G2Token(G1(root, G1FuzzyHash(name)), 5, self, consents));
         }
       }
 
-      result.Add(new Anchor { Hash = anchorHash, Verified = false, G1Token = tokens });
+      result.Add(new Anchor { Hash = anchorHash, Verified = false, G2Token = tokens });
     }
 
     return result;
@@ -125,7 +124,7 @@ public class G1TokenBuilder(string defaultIntlCode)
   public static string AnchorHash(string contact)
   {
     var hash = SHA256.HashData(Encoding.UTF8.GetBytes(contact));
-    return $"g1:{Convert.ToHexString(hash).ToLower()}";
+    return $"g2:{Convert.ToHexString(hash).ToLower()}";
   }
 
   public static byte[] Sha256(string input)
@@ -159,7 +158,7 @@ public class G1TokenBuilder(string defaultIntlCode)
 
   public static string G1(uint root, int leaf)
   {
-    return root.ToString("X8") + leaf.ToString("X8");
+    return root.ToString("X8").ToLower() + leaf.ToString("X8").ToLower();
   }
 }
 
@@ -177,7 +176,7 @@ public class G1Source(string type, DateTime updateTime)
   public readonly DateTime UpdateTime = updateTime;
 }
 
-public class G1Token(string hash, double score, bool self, List<G1Consent> consent)
+public class G2Token(string hash, double score, bool self, List<G1Consent> consent)
 {
   public readonly string Hash = hash;
   public readonly bool Self = self;
@@ -192,7 +191,7 @@ public class Anchor
 {
   public string? Hash { get; set; }
   public bool Verified { get; set; } = true;
-  public List<G1Token> G1Token { get; set; } = [];
+  public List<G2Token> G2Token { get; set; } = [];
 }
 
 public class Fnv1a

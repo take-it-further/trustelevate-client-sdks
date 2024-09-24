@@ -6,17 +6,17 @@
   ```sh
   dotnet add package TrustElevateSDK
 -
-- Implement the G1TokenBuilder to start using hashing
+- Implement the G2TokenBuilder to start using hashing
 
-- Below are the details for teh G1TokenBuilder what are the method it comprises of.
+- Below are the details for teh G2TokenBuilder what are the method it comprises of.
 
-## Methods in G1TokenBuilder:
+## Methods in G2TokenBuilder:
 
 
 ## AddConsent
 
     ```csharp
-    public G1TokenBuilder AddConsent(string subject, DateTime requestTime)
+    public G2TokenBuilder AddConsent(string subject, DateTime requestTime)
     {
         if (!string.IsNullOrEmpty(subject))
         {
@@ -24,11 +24,11 @@
         }
         return this;
     }
-- Purpose: Adds a consent entry with a specified subject and request time to the G1TokenBuilder.
+- Purpose: Adds a consent entry with a specified subject and request time to the G2TokenBuilder.
 - Explanation: If the subject is not empty, this method adds the subject and its corresponding requestTime to the subjects dictionary. This allows tracking of consent requests.
 ## AddContacts
     ```csharp
-    public G1TokenBuilder AddContacts(params string[] contacts)
+    public G2TokenBuilder AddContacts(params string[] contacts)
     {
         foreach (var contact in contacts)
         {
@@ -40,12 +40,12 @@
         }
         return this;
     }
-- Purpose: Adds one or more contacts to the G1TokenBuilder after normalizing them.
+- Purpose: Adds one or more contacts to the G2TokenBuilder after normalizing them.
 - Explanation: This method iterates through the provided contacts, normalizes each contact using NormalizeContact, and adds the normalized contact to the
   contacts list.
 ## SetName
     ```csharp
-    public G1TokenBuilder SetName(string name)
+    public G2TokenBuilder SetName(string name)
     {
         if (!string.IsNullOrEmpty(name))
         {
@@ -57,7 +57,7 @@
 - Explanation: If the name is not empty, this method trims any whitespace and assigns it to the name field of the builder.
 ## SetDateOfBirth
     ```csharp
-    public G1TokenBuilder SetDateOfBirth(DateTime date)
+    public G2TokenBuilder SetDateOfBirth(DateTime date)
     {
         day = date.Day;
         month = date.Month;
@@ -68,7 +68,7 @@
 - Explanation: This method extracts the day, month, and year from the provided date and assigns them to the respective fields.
 ## SetSelf
     ```csharp
-    public G1TokenBuilder SetSelf(bool self)
+    public G2TokenBuilder SetSelf(bool self)
     {
         this.self = self;
         return this;
@@ -88,24 +88,24 @@
             {
                 consents.Add(new G1Consent("", key, value, ""));
             }
-            var tokens = new List<G1Token>();
+            var tokens = new List<G2Token>();
             if (!string.IsNullOrEmpty(name))
             {
                 var root = G1Root(anchorHash);
                 var t = G1(root, G1FuzzyHash(name));
-                tokens.Add(new G1Token(t, 2, self, consents));
+                tokens.Add(new G2Token(t, 2, self, consents));
             }
             if (day > 0 && month > 0 && year > 0)
             {
                 var dateString = $"{day:D2}{month:D2}{year}";
                 var root = G1Root(anchorHash + dateString);
-                tokens.Add(new G1Token(G1(root, 0), 3, self, consents));
+                tokens.Add(new G2Token(G1(root, 0), 3, self, consents));
                 if (!string.IsNullOrEmpty(name))
                 {
-                    tokens.Add(new G1Token(G1(root, G1FuzzyHash(name)), 5, self, consents));
+                    tokens.Add(new G2Token(G1(root, G1FuzzyHash(name)), 5, self, consents));
                 }
             }
-            result.Add(new Anchor { Hash = anchorHash, Verified = false, G1Token = tokens });
+            result.Add(new Anchor { Hash = anchorHash, Verified = false, G2Token = tokens });
         }
         return result;
     }
@@ -115,7 +115,7 @@
   Iterates through the contacts list.
   For each contact, it generates an anchorHash using the AnchorHash method.
   Creates a list of consents from the subjects dictionary.
-  Initializes a list of G1Token.
+  Initializes a list of G2Token.
   If a name is set, it adds a token with the name's fuzzy hash.
   If day, month, and year are set, it adds a token with the date of birth.
   Adds the tokens to an Anchor object and appends it to the result list.
@@ -210,9 +210,9 @@
       public readonly DateTime UpdateTime = updateTime;
     }
 - Purpose: Represents the source of a G1 token with a type and update time.
-## G1Token
+## G2Token
     ```csharp
-    public class G1Token(string hash, double score, bool self, List<G1Consent> consent)
+    public class G2Token(string hash, double score, bool self, List<G1Consent> consent)
     {
       public readonly string Hash = hash;
       public readonly bool Self = self;
@@ -231,10 +231,10 @@
     {
       public string? Hash { get; set; }
       public bool Verified { get; set; } = true;
-      public List<G1Token> G1Token { get; set; } = [];
+      public List<G2Token> G2Token { get; set; } = [];
     }
 - Purpose: Represents an anchor point for G1 tokens, indicating their hash and verification status.
-- G1Token (List<G1Token>): The list of G1 tokens associated with the anchor.
+- G2Token (List<G2Token>): The list of G1 tokens associated with the anchor.
 ## Fnv1a
     ```csharp
     public class Fnv1a
