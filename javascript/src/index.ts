@@ -1,1 +1,1 @@
-export {G1TokenBuilder} from './tokenizer';
+export {G2TokenBuilder} from './tokenizer';

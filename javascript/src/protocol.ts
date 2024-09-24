@@ -2,10 +2,10 @@
 export type Anchor = {
   anchor: string;
   verified: boolean;
-  g1token: G1Token[];
+  g2token: G2Token[];
 }
 
-export class G1Token {
+export class G2Token {
   readonly hash: string;
   readonly self: boolean
   // Deprecated. use best_score.
