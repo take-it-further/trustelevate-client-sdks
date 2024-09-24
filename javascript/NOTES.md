@@ -17,6 +17,6 @@ this can be then installed in a nodejs application by doing:
 # publish
 
 before publishing ensure you bump the version in the package.json appropriately
-
+    yarn build
     npm login
     npm publish --access public
